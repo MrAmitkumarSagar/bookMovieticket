@@ -1,13 +1,12 @@
 const mongodb = require('mongodb');
 
-//mramitkumarsagar
-//0KkzUsD6Z8RPYTeg
 
-const mongoURI = "mongodb://127.0.0.1:27017/bookMovie"
+
+// const mongoURI = "mongodb://127.0.0.1:27017/bookMovie"
 
 // const mongoURI= "mongodb+srv://mramitkumarsagar:0KkzUsD6Z8RPYTeg@cluster0.iuztyog.mongodb.net/?retryWrites=true&w=majority" ;
 
-
+const mongoURI= "mongodb+srv://mramitkumarsagar:0KkzUsD6Z8RPYTeg@cluster0.iuztyog.mongodb.net/?retryWrites=true&w=majority"
 
 let mongoose = require('mongoose');
 const { bookMovieSchema } = require('./schema')

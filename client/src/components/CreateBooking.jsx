@@ -6,7 +6,14 @@ import  './style.css';
 // import Slot from './Slot';
 import axios from 'axios';
 
-function CreateBooking(props) {
+function CreateBooking() {
+
+  
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  this is main comoponent for booking ticket ,this component also cantains some other component 
+  here using the useState for managing the movie object state 
+  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
+
 
   const [movie, setMovie] = useState({
     title: "",
@@ -22,37 +29,52 @@ function CreateBooking(props) {
   })
 
 
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  postData is arrow function which is posting the movie state on the backend api
+  with the help of axios library 
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
+
   const postData = (data) => {
     const res = axios.post('http://localhost:8080/api/booking', {
       body: JSON.stringify(data)
     }
+    
     );
     return res
   }
+// 
 
 
+
+
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  movieSubmitHandler is the event Handler emitted by the button in the form use for ticket booking
+  in this handler function postData function is called and the movie state is passed 
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function movieSubmitHandler(e) {
     // e.preventDefault();
-    console.log(" You have click to book movie ");
-    console.log(`movie details are title =${movie.title} slot=${movie.slot} and seat = ${movie.seats.A1} ,${movie.seats.A2} ,
-    ${movie.seats.A3}, ${movie.seats.A4}, ${movie.seats.D1}, ${movie.seats.D2}`)
+    // // console.log(" You have click to book movie ");
+    // console.log(`movie details are title =${movie.title} slot=${movie.slot} and seat = ${movie.seats.A1} ,${movie.seats.A2} ,
+    // ${movie.seats.A3}, ${movie.seats.A4}, ${movie.seats.D1}, ${movie.seats.D2}`)
     const res = postData(movie)
     res ? console.log("data submitted succesfully code", res) : console.log("error")
 
   }
 
 
+  
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  this event Handler  is used for selection the name of the movie when the title is clicked on the
+  frontEnd then the value of that title is stored in movie state variable 
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function titleClickHandler(e) {
     e.preventDefault();
-    console.log(e.target.className)
-    // e.taeget.className +="-general"
+    console.log(e)
     if (e.target.className === "child") {
-      // e.taeget.className+="-active"
       setMovie({
         ...movie,
         title: e.target.innerText
-      })
-      console.log(movie)
+      }) 
       e.target.style.border = "2px solid blue"
       e.target.style.borderRadius = "8px";
       e.target.style.padding = "0px 10px"
@@ -61,6 +83,10 @@ function CreateBooking(props) {
     // props.movieName(e.target.innerText)
   }
 
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  this event Handler  is used for selection the slot ot time  of the movie when the slot is clicked 
+  on the frontEnd then the value of that slot is stored in movie state variable 
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function slotClickHandler(e) {
     e.preventDefault();
     if (e.target.className === "child") {
@@ -76,6 +102,11 @@ function CreateBooking(props) {
   }
 
 
+  
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  this event Handler  is used for selection the seats of the movie when the seat is selected on the
+  frontEnd then the value of that seat is stored in movie state variable 
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function seatClickHandler(e) {
     e.preventDefault();
     console.log(e.target.name, e.target.value)
@@ -102,6 +133,13 @@ function CreateBooking(props) {
   return (
 
 
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  form is used for taking the input from the user in this form there is three section 
+  first section for movie title
+  second section for the slot 
+  third section for the seats selection
+
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
     <form>
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -147,9 +185,6 @@ function CreateBooking(props) {
           </div>
         </div>
       </Card>
-
-
-
 
 
 

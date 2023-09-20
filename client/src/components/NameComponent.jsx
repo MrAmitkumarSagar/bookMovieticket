@@ -3,15 +3,11 @@ import Card from './Card'
 
 function NameComponent(props) {
 
-  // function divClickHandler(e){
-  //   e.preventDefault();
-  //   console.log(e.target.innerText)
-  //   e.target.style.border="2px solid blue"
-  //   e.target.style.borderRadius="8px";
-  //   e.target.style.padding="0px 10px"
-  //   props.movieName(e.target.innerText)
-  // }
+
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  this component is the smallest comoopnent which is called over and over in the movie name list iteration
   
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/  
  
   return (
     <Card 

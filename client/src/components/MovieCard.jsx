@@ -2,11 +2,13 @@ import React from 'react'
 import Card from './Card'
 
 function MovieCard(props) {
-    // const mpvie={
-    //     title:"",
-    //     seat:"",
-    //     slot:""
-    // }
+   
+  
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  movie Card is used for describe the movie which is booked 
+  in this section a movie is taking as prop and display that movie
+  in one componet 
+ =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   return (
     <div style={{display:'flex', 
     flexDirection:'column',
