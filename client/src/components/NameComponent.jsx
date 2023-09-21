@@ -17,7 +17,7 @@ function NameComponent(props) {
       paddingTop:'2px',
       border: '2px solid black',
       wordWrap:'normal' }} >
-       <div className='child' style={{padding:"1px 5px",border:'' ,borderRadius:"5px"}}  >
+       <div id={props.item} className='child' style={{padding:"1px 5px",border:'' ,borderRadius:"5px"}}  >
        {props.item}
        </div>
         

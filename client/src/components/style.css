@@ -1,8 +1,11 @@
-.general{
-    background-color: aliceblue;
+.child {
+    background-color: white;
 }
 .active{
-    background-color: rgb(92, 170, 243);
-    border-radius: 10px;
-
+    background-color: rgb(218, 227, 235);
+    border-radius: 10% ;
+   border: 2px solid rgb(30, 30, 190);
+    padding: 0px 10px; 
+     
 }
+ 

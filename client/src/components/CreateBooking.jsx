@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { movies, seats, slots } from "../data"
-import NameComponent from './NameComponent'
-import Card from './Card';
-import  './style.css';
-// import Slot from './Slot';
+import React, { useEffect, useState } from 'react'
+import './style.css';
 import axios from 'axios';
+import Card from './Card';
+import NameComponent from './NameComponent';
+import { movies, seats, slots } from '../data';
+
 
 function CreateBooking() {
 
-  
+
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   this is main comoponent for booking ticket ,this component also cantains some other component 
   here using the useState for managing the movie object state 
@@ -28,6 +28,22 @@ function CreateBooking() {
     }
   })
 
+  useEffect(() => {
+    const lastTitle = document.getElementById(localStorage.getItem('title'));
+    lastTitle ? lastTitle.className = "active" : console.log("")
+
+    const lastSlot = document.getElementById(localStorage.getItem('slot'));
+    lastSlot ? lastSlot.className = "active" : console.log("")
+
+    const seatObject = JSON.parse(localStorage.getItem('seat'))
+    for (const key in seatObject) {
+      if(seatObject[key] > 0){
+        const lastSeat = document.getElementById(key)
+        lastSeat ? lastSeat.className = "active" : console.log("")        
+      }
+    }
+  }, [])
+
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   postData is arrow function which is posting the movie state on the backend api
@@ -37,12 +53,10 @@ function CreateBooking() {
   const postData = (data) => {
     const res = axios.post('http://localhost:8080/api/booking', {
       body: JSON.stringify(data)
-    }
-    
-    );
+    });
     return res
   }
-// 
+
 
 
 
@@ -62,26 +76,27 @@ function CreateBooking() {
   }
 
 
-  
+
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   this event Handler  is used for selection the name of the movie when the title is clicked on the
   frontEnd then the value of that title is stored in movie state variable 
  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function titleClickHandler(e) {
     e.preventDefault();
-    console.log(e)
     if (e.target.className === "child") {
       setMovie({
         ...movie,
         title: e.target.innerText
-      }) 
-      e.target.style.border = "2px solid blue"
-      e.target.style.borderRadius = "8px";
-      e.target.style.padding = "0px 10px"
+      })
+      e.target.className = "active"
+      const lastEl = document.getElementById(localStorage.getItem('title'));
+      lastEl ? lastEl.className = "child" : console.log("")
+      localStorage.setItem('title', e.target.id)
     }
-
-    // props.movieName(e.target.innerText)
   }
+
+
+
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   this event Handler  is used for selection the slot ot time  of the movie when the slot is clicked 
@@ -94,22 +109,22 @@ function CreateBooking() {
         ...movie,
         slot: e.target.innerText,
       })
-
-      e.target.style.border = "2px solid blue"
-      e.target.style.borderRadius = "8px";
-      e.target.style.padding = "0px 10px"
+      e.target.className = "active"
+      const lastEl = document.getElementById(localStorage.getItem('slot'));
+      lastEl ? lastEl.className = "child" : console.log(" ")
+      localStorage.setItem('slot', e.target.id)
     }
   }
 
 
-  
+
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   this event Handler  is used for selection the seats of the movie when the seat is selected on the
   frontEnd then the value of that seat is stored in movie state variable 
  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function seatClickHandler(e) {
     e.preventDefault();
-    console.log(e.target.name, e.target.value)
+    // console.log(e.target.name, e.target.value)
     setMovie({
       ...movie,
       seats: {
@@ -117,35 +132,41 @@ function CreateBooking() {
         [e.target.name]: e.target.value
       }
     })
-    console.log("seat", movie)
-    e.target.style.border = "2px solid blue"
-    e.target.style.borderRadius = "8px";
-    e.target.style.padding = "0px 10px"
+    e.target.className = "active"
+    console.log(e)
+
+ 
+    const seatObject = JSON.parse(localStorage.getItem('seat'))
+    for (const key in seatObject) {
+      if(seatObject[key] <= 0){
+        const lastEl = document.getElementById(key)
+        lastEl ? lastEl.className = "child" : console.log("")        
+      }
+    }
+    // seatObject.map((value,id)=>{console.log( id, value)})
+    // lastSeat.map((value,id)=>{console.log(id , value)}) 
+
+    // const lastEl = document.getElementById(localStorage.getItem('seat'));
+    // lastEl ? lastEl.className = "child" : console.log("")
+    localStorage.setItem('seat', JSON.stringify(movie.seats))
 
   }
 
-  // const active={
-  //   border:"2px solid blue",
-  //   borderRadius:"8px",
-  //   padding:"0px 10px"
-  // }
 
   return (
 
-
-  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-  form is used for taking the input from the user in this form there is three section 
-  first section for movie title
-  second section for the slot 
-  third section for the seats selection
-
- =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
+    /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    form is used for taking the input from the user in this form there is three section 
+    first section for movie title
+    second section for the slot 
+    third section for the seats selection   
+   =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
     <form>
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <h3>Select a movie</h3>
           <div>
-            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }} onClick={titleClickHandler}> {
+            <div id="title-parent" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }} onClick={titleClickHandler}> {
               movies.map((item, index) => (
                 <NameComponent key={index} item={item} />))
             }
@@ -159,7 +180,7 @@ function CreateBooking() {
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <h3>Select a slots</h3>
-          <div style={{ display: 'flex', justifyContent: 'center' }} onClick={slotClickHandler}>
+          <div id="slot-pparent" style={{ display: 'flex', justifyContent: 'center' }} onClick={slotClickHandler}>
             {
               slots.map((item, index) => (
                 <NameComponent key={index} item={item} />
@@ -175,20 +196,18 @@ function CreateBooking() {
           <h3>Select a seat</h3>
           <div style={{ display: 'flex', justifyContent: 'center' }} >
             {seats.map((item, index) => (
-              <div className='child' key={index} style={{ padding: "1px 5px", border: '', borderRadius: "5px" }}  >
+              <Card key={index} style={{ padding: "1px 5px", border: '', borderRadius: "5px" }}  >
                 {item}
-                <input type="number" name={item} style={{ width: "35px" }} onChange={seatClickHandler} />
-              </div>
-              // <Slot key={index} item={item} handler={seatClickHandler} />
-            ))
-            }
+                <input id={item} className='child' type="number" name={item} style={{ width: "35px" }} onClick={seatClickHandler} />
+              </Card>
+            ))}
           </div>
         </div>
       </Card>
 
+      {/* <button onClick={test} >ok</button> */}
 
-
-      <button style={{ margin: '20px', marginTop: '35px', padding: '5px' }} onClick={movieSubmitHandler}>confirm</button>
+      <button className="" style={{ margin: '20px', marginTop: '35px', padding: '5px' }} onClick={movieSubmitHandler}>confirm</button>
 
     </form>
   )
