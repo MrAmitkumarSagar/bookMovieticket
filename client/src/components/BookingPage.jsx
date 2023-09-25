@@ -11,7 +11,7 @@ function BookingPage() {
         this component is conteiner for two component 
        =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
 
-        <div style={{ display: 'flex', flexDirection: 'row', }}  >
+        <div className='main-container' style={{ display: 'flex', flexDirection: 'row', }}  >
             <Card style={{
 
                 width: '70%',

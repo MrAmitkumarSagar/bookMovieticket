@@ -1,7 +1,6 @@
 import React from 'react'
-import Card from './Card'
 
-function MovieCard(props) {
+function MovieCard({movie}) {
    
   
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -10,24 +9,25 @@ function MovieCard(props) {
   in one componet 
  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   return (
-    <div style={{display:'flex', 
+    <div className='booked-movie-card' style={{display:'flex', 
     flexDirection:'column',
      borderBottom: '2px solid black'}}>
-        <div>
-            title  : { props.movie.movie}
+        <div className='movie-title'>
+            Movie Title  : { movie.movie}
         </div>
-        <div>
-            slot : {props.movie.slot}
+        <div className='time-slot-'>
+            Time Slot : {movie.slot}
         </div>
-        <div style={{display:"flex", flexDirection:'column',}}>
-            seat :{<>
-            <div>A1 : {props.movie.seats.A1}</div>
-            <div>A2 : {props.movie.seats.A2}</div>
-            <div>A3 : {props.movie.seats.A3}</div>
-            <div>A4 : {props.movie.seats.A4}</div>
-            <div>D1 : {props.movie.seats.D1}</div>
-            <div>D2 : {props.movie.seats.D2}</div>
-           </>}
+        <div className='movie-seat' style={{display:"flex", flexDirection:'column',}}>
+           Movie Seat :-- <div>
+          
+          <div>A1 : {movie.seats.A1}</div>
+          <div>A2 : {movie.seats.A2}</div>
+          <div>A3 : {movie.seats.A3}</div>
+          <div>A4 : {movie.seats.A4}</div>
+          <div>D1 : {movie.seats.D1}</div>
+          <div>D2 : {movie.seats.D2}</div>
+           </div>
         </div>
     </div>
   )

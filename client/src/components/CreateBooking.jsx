@@ -1,10 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useReducer } from 'react'
 import './style.css';
 import axios from 'axios';
 import Card from './Card';
 import NameComponent from './NameComponent';
 import { movies, seats, slots } from '../data';
 
+
+const setMovieReducer = (movie, action) => {
+  switch (action.type) {
+    case 'set_title':
+      return { ...movie, title: action.payload };
+    case 'set_slot':
+      return { ...movie, slot: action.payload };
+    case 'set_seats':
+      console.log("data saved")
+      return { ...movie, seats: action.payload, };
+    case 'movie_detail':
+      return {...movie};
+    default:
+      throw new Error();
+  }
+}
+const ACTION = {
+  SET_TITLE: 'set_title',
+  SET_SLOT: 'set_slot',
+  SET_SEAT: 'set_seats',
+  MOVIE_DETAIL:'movie_detail'
+}
 
 function CreateBooking() {
 
@@ -14,8 +36,7 @@ function CreateBooking() {
   here using the useState for managing the movie object state 
   =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
 
-
-  const [movie, setMovie] = useState({
+  const [movie, dispatch] = useReducer(setMovieReducer, {
     title: "",
     slot: "",
     seats: {
@@ -28,21 +49,43 @@ function CreateBooking() {
     }
   })
 
+
+
+
   useEffect(() => {
+    const localTitle = localStorage.getItem('title')
+    const localSlot = localStorage.getItem('slot')
+    const prevSeat = localStorage.getItem('seat')
+    if (localTitle) {
+      dispatch({ type: ACTION.SET_TITLE, payload: localTitle })
+    }
+    if (localSlot) {
+      dispatch({ type: ACTION.SET_SLOT, payload: JSON.parse(localSlot) })
+    }
+    if (prevSeat) {
+      console.log("recieved  from local ", JSON.parse(prevSeat));
+      dispatch({ type: ACTION.SET_SEAT, payload: JSON.parse(prevSeat) }) 
+    }
     const lastTitle = document.getElementById(localStorage.getItem('title'));
-    lastTitle ? lastTitle.className = "active" : console.log("")
+    if (lastTitle) lastTitle.className = "active"
 
     const lastSlot = document.getElementById(localStorage.getItem('slot'));
-    lastSlot ? lastSlot.className = "active" : console.log("")
+    if (lastSlot) lastSlot.className = "active"
 
-    const seatObject = JSON.parse(localStorage.getItem('seat'))
-    for (const key in seatObject) {
-      if(seatObject[key] > 0){
-        const lastSeat = document.getElementById(key)
-        lastSeat ? lastSeat.className = "active" : console.log("")        
+
+    if (prevSeat) {
+      const seatObject = JSON.parse(prevSeat)
+      for (const key in seatObject) {
+        if (seatObject[key] > 0) {
+          const lastSeat = document.getElementById(key);
+          if (lastSeat) lastSeat.value = seatObject[key]
+          if (lastSeat) lastSeat.className = "active"
+        }
       }
     }
   }, [])
+
+
 
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -51,9 +94,12 @@ function CreateBooking() {
  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
 
   const postData = (data) => {
-    const res = axios.post('http://localhost:8080/api/booking', {
-      body: JSON.stringify(data)
-    });
+    const res = axios.post('http://localhost:8080/api/booking', data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      }
+    })
     return res
   }
 
@@ -66,15 +112,23 @@ function CreateBooking() {
   in this handler function postData function is called and the movie state is passed 
  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function movieSubmitHandler(e) {
-    // e.preventDefault();
-    // // console.log(" You have click to book movie ");
-    // console.log(`movie details are title =${movie.title} slot=${movie.slot} and seat = ${movie.seats.A1} ,${movie.seats.A2} ,
-    // ${movie.seats.A3}, ${movie.seats.A4}, ${movie.seats.D1}, ${movie.seats.D2}`)
-    const res = postData(movie)
-    res ? console.log("data submitted succesfully code", res) : console.log("error")
+    e.target.className = "active"
 
+    if (movie.title === "" || movie.slot === "" || (movie.seats.A1 === 0 && movie.seats.A2 === 0 && movie.seats.A3 === 0 && movie.seats.A4 === 0 && movie.seats.D1 === 0 && movie.seats.D2 === 0)) {
+      alert("Please fill the details carefully...");
+    }
+    else {
+      const res = postData(JSON.stringify(
+        {
+          title: movie.title,
+          slot: movie.slot,
+          seats: movie.seats
+        }
+      ))
+      res ? console.log("data submitted succesfully...") : console.log("error")
+      localStorage.clear();
+    }
   }
-
 
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -84,14 +138,14 @@ function CreateBooking() {
   function titleClickHandler(e) {
     e.preventDefault();
     if (e.target.className === "child") {
-      setMovie({
-        ...movie,
-        title: e.target.innerText
-      })
+      dispatch({ type: ACTION.SET_TITLE, payload: e.target.innerText })
       e.target.className = "active"
-      const lastEl = document.getElementById(localStorage.getItem('title'));
-      lastEl ? lastEl.className = "child" : console.log("")
+      const lastTitle = document.getElementById(localStorage.getItem('title'));
+      if (lastTitle) {
+        lastTitle.className = "child"
+      }
       localStorage.setItem('title', e.target.id)
+
     }
   }
 
@@ -105,13 +159,12 @@ function CreateBooking() {
   function slotClickHandler(e) {
     e.preventDefault();
     if (e.target.className === "child") {
-      setMovie({
-        ...movie,
-        slot: e.target.innerText,
-      })
+      dispatch({ type: ACTION.SET_SLOT, payload: e.target.innerText })
       e.target.className = "active"
-      const lastEl = document.getElementById(localStorage.getItem('slot'));
-      lastEl ? lastEl.className = "child" : console.log(" ")
+      const lastSlot = document.getElementById(localStorage.getItem('slot'));
+      if (lastSlot) {
+        lastSlot.className = "child"
+      }
       localStorage.setItem('slot', e.target.id)
     }
   }
@@ -124,33 +177,30 @@ function CreateBooking() {
  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
   function seatClickHandler(e) {
     e.preventDefault();
-    // console.log(e.target.name, e.target.value)
-    setMovie({
-      ...movie,
-      seats: {
-        ...movie.seats,
-        [e.target.name]: e.target.value
-      }
-    })
+    dispatch({ type: ACTION.SET_SEAT, payload:{...movie.seats,[e.target.id]:Number(e.target.value)} })
     e.target.className = "active"
-    console.log(e)
-
- 
     const seatObject = JSON.parse(localStorage.getItem('seat'))
     for (const key in seatObject) {
-      if(seatObject[key] <= 0){
-        const lastEl = document.getElementById(key)
-        lastEl ? lastEl.className = "child" : console.log("")        
+      if (seatObject[key] <= 0) {
+        const lastSeat = document.getElementById(key)
+        if (lastSeat) {
+          lastSeat.className = "child"
+        }
       }
     }
-    // seatObject.map((value,id)=>{console.log( id, value)})
-    // lastSeat.map((value,id)=>{console.log(id , value)}) 
-
-    // const lastEl = document.getElementById(localStorage.getItem('seat'));
-    // lastEl ? lastEl.className = "child" : console.log("")
-    localStorage.setItem('seat', JSON.stringify(movie.seats))
-
+    
   }
+
+  useEffect(() => {
+    console.log("changes started")
+    console.log("befor local", localStorage.getItem('seat')); 
+    console.log("data from variable",movie.seats)
+    localStorage.setItem('seat',JSON.stringify(movie.seats) )
+    console.log("after local", localStorage.getItem('seat'));
+
+  }, [movie.seats])
+
+
 
 
   return (
@@ -161,26 +211,26 @@ function CreateBooking() {
     second section for the slot 
     third section for the seats selection   
    =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
-    <form>
-      <Card>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <h3>Select a movie</h3>
-          <div>
-            <div id="title-parent" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }} onClick={titleClickHandler}> {
-              movies.map((item, index) => (
-                <NameComponent key={index} item={item} />))
-            }
-            </div>
+    <form className='create-booking-page'>
+      <Card >
+        <div className='movie-title-parent' style={{ display: 'flex', flexDirection: 'column' }}>
+          <h3>Select a Movie </h3>
+
+          <div id="movie-title-row" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }} onClick={titleClickHandler}> {
+            movies.map((item, index) => (
+              <NameComponent key={index} item={item} />))
+          }
           </div>
+
         </div>
       </Card>
 
 
 
-      <Card>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <Card  >
+        <div className='time=slot-parent' style={{ display: 'flex', flexDirection: 'column' }}>
           <h3>Select a slots</h3>
-          <div id="slot-pparent" style={{ display: 'flex', justifyContent: 'center' }} onClick={slotClickHandler}>
+          <div className='slot=row' id="slot-pparent" style={{ display: 'flex', justifyContent: 'center' }} onClick={slotClickHandler}>
             {
               slots.map((item, index) => (
                 <NameComponent key={index} item={item} />
@@ -192,13 +242,13 @@ function CreateBooking() {
 
 
       <Card>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className='movie-seat-container' style={{ display: 'flex', flexDirection: 'column' }}>
           <h3>Select a seat</h3>
-          <div style={{ display: 'flex', justifyContent: 'center' }} >
+          <div className='movie-seat-row' style={{ display: 'flex', justifyContent: 'center' }} >
             {seats.map((item, index) => (
               <Card key={index} style={{ padding: "1px 5px", border: '', borderRadius: "5px" }}  >
                 {item}
-                <input id={item} className='child' type="number" name={item} style={{ width: "35px" }} onClick={seatClickHandler} />
+                <input id={item} className='child' type="number" min="0" step="1" name={item} style={{ width: "35px" }} onChange={seatClickHandler} />
               </Card>
             ))}
           </div>
@@ -207,7 +257,9 @@ function CreateBooking() {
 
       {/* <button onClick={test} >ok</button> */}
 
-      <button className="" style={{ margin: '20px', marginTop: '35px', padding: '5px' }} onClick={movieSubmitHandler}>confirm</button>
+
+      <button className="" style={{ margin: '20px', marginTop: '35px', padding: '5px' }} onMouseEnter={(e) => { e.target.className = "active" }} onClick={movieSubmitHandler}>confirm</button>
+
 
     </form>
   )
