@@ -60,7 +60,7 @@ function CreateBooking() {
       dispatch({ type: ACTION.SET_TITLE, payload: localTitle })
     }
     if (localSlot) {
-      dispatch({ type: ACTION.SET_SLOT, payload: JSON.parse(localSlot) })
+      dispatch({ type: ACTION.SET_SLOT, payload: localSlot })
     }
     if (prevSeat) {
       console.log("recieved  from local ", JSON.parse(prevSeat));

@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
-const bookMovie = require('./connector');
+const bookMovie = require('./connector')
 const { seats } = require('./client/src/data');
 app.use(cors());
 
