@@ -175,32 +175,78 @@ function CreateBooking() {
   this event Handler  is used for selection the seats of the movie when the seat is selected on the
   frontEnd then the value of that seat is stored in movie state variable 
  =-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=*/
+  // function seatClickHandler(e) {
+  //   e.preventDefault();
+  //   dispatch({ type: ACTION.SET_SEAT, payload:{...movie.seats,[e.target.id]:Number(e.target.value)} })
+  //   e.target.className = "active"
+  //   const seatObject = JSON.parse(localStorage.getItem('seat'))
+  //   for (const key in seatObject) {
+  //     if (seatObject[key] <= 0) {
+  //       const lastSeat = document.getElementById(key)
+  //       if (lastSeat) {
+  //         lastSeat.className = "child"
+  //       }
+  //     }
+  //   }
+    
+  // }
+
+  // useEffect(() => {
+  //   console.log("changes started")
+  //   console.log("befor local", localStorage.getItem('seat')); 
+  //   console.log("data from variable",movie.seats)
+  //   localStorage.setItem('seat',JSON.stringify(movie.seats) )
+  //   console.log("after local", localStorage.getItem('seat'));
+
+  // }, [movie.seats])
+
   function seatClickHandler(e) {
     e.preventDefault();
-    dispatch({ type: ACTION.SET_SEAT, payload:{...movie.seats,[e.target.id]:Number(e.target.value)} })
-    e.target.className = "active"
-    const seatObject = JSON.parse(localStorage.getItem('seat'))
-    for (const key in seatObject) {
-      if (seatObject[key] <= 0) {
-        const lastSeat = document.getElementById(key)
-        if (lastSeat) {
-          lastSeat.className = "child"
+    const updatedSeats = { ...movie.seats, [e.target.id]: Number(e.target.value) };
+    dispatch({ type: ACTION.SET_SEAT, payload: updatedSeats });
+    e.target.className = "active";
+  
+  
+    // Update localStorage directly
+    localStorage.setItem('seat', JSON.stringify(updatedSeats));
+  }
+  
+  
+  useEffect(() => {
+    const localTitle = localStorage.getItem('title')
+    const localSlot = localStorage.getItem('slot')
+    const prevSeat = localStorage.getItem('seat')
+    if (localTitle) {
+      dispatch({ type: ACTION.SET_TITLE, payload: localTitle })
+    }
+    if (localSlot) {
+      dispatch({ type: ACTION.SET_SLOT, payload: JSON.parse(localSlot) })
+    }
+    if (prevSeat) {
+      console.log("recieved  from local ", JSON.parse(prevSeat));
+      dispatch({ type: ACTION.SET_SEAT, payload: JSON.parse(prevSeat) })
+    }
+    const lastTitle = document.getElementById(localTitle);
+    if (lastTitle) lastTitle.className = "active"
+  
+  
+    const lastSlot = document.getElementById(localSlot);
+    if (lastSlot) lastSlot.className = "active"
+  
+  
+  
+  
+    if (prevSeat) {
+      const seatObject = JSON.parse(prevSeat)
+      for (const key in seatObject) {
+        if (seatObject[key] > 0) {
+          const lastSeat = document.getElementById(key);
+          if (lastSeat) lastSeat.value = seatObject[key]
+          if (lastSeat) lastSeat.className = "active"
         }
       }
     }
-    
-  }
-
-  useEffect(() => {
-    console.log("changes started")
-    console.log("befor local", localStorage.getItem('seat')); 
-    console.log("data from variable",movie.seats)
-    localStorage.setItem('seat',JSON.stringify(movie.seats) )
-    console.log("after local", localStorage.getItem('seat'));
-
-  }, [movie.seats])
-
-
+  }, [])
 
 
   return (
